@@ -1,9 +1,28 @@
-import React from "react";
+//import React from "react";
+import React, { Component } from "react";
 import GoogleMapReact from "google-map-react";
+import axios from 'axios';
+//import KMZGeoJSON from 'kmz-geojson';
+import toGeoJSON from '@mapbox/togeojson';
 
-const onGoogleApiLoaded = (map, maps) => {
-  //var src = 'https://developers.google.com/maps/documentation/javascript/examples/kml/westcampus.kml';
-  var src = 'http://iblogbox.github.io/js/gpx/sample/Blackbirds.kmz';
+
+
+
+
+var onGoogleApiLoaded = (map, maps) => {
+  var src = 'https://developers.google.com/maps/documentation/javascript/examples/kml/westcampus.kml';
+  //var KMZUrl = 'http://iblogbox.github.io/js/gpx/sample/Blackbirds.kmz';
+  //var KMZUrl = 'https://github.com/kannannce1/google-map-react/blob/master/public/otherRestrictionsRas.kmz';
+
+  //var KMZGeoJSON = require('kmz-geojson');
+
+  //KMZGeoJSON.toGeoJSON(KMZUrl, function(err, json) {
+    // Do something with the GeoJSON data.
+    //console.log("working")
+  //});
+
+
+ 
   
   var triangleCoords = [
     { lat: 25.774, lng: -80.19 },
@@ -31,7 +50,7 @@ const onGoogleApiLoaded = (map, maps) => {
 };
 
 
-
+/*
 const GoogleApiKML = () => (
   <GoogleMapReact
     defaultCenter={{ lat: 24.886, lng: -70.268 }}
@@ -40,5 +59,32 @@ const GoogleApiKML = () => (
     onGoogleApiLoaded={({ map, maps }) => onGoogleApiLoaded(map, maps)}
   />
 );
+*/
+class GoogleApiKML extends Component {
+
+  componentDidMount(){
+    let url = 'https://developers.google.com/maps/documentation/javascript/examples/kml/westcampus.kml';
+    axios.get(url).then(res => {
+      console.log(res.data, '....');
+     // console.log(toGeoJSON.kml(res));
+    var  parser = new DOMParser();
+    var  xmlDoc = parser.parseFromString(res.data,"text/xml");
+    var coordinates = xmlDoc.getElementsByTagName("coordinates")[0].childNodes[0].nodeValue;
+    console.log('coordinates', coordinates)
+    });
+   }
+  
+
+render() {
+  return (
+    <GoogleMapReact
+        defaultCenter={{ lat: 24.886, lng: -70.268 }}
+        defaultZoom={5}
+        yesIWantToUseGoogleMapApiInternals
+        onGoogleApiLoaded={({ map, maps }) => onGoogleApiLoaded(map, maps)}
+      />
+  )
+}
+};
 
 export default GoogleApiKML;
